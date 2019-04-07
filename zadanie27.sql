@@ -1,6 +1,6 @@
---zadanie 27
-IF OBJECT_ID('dbo.osoby', 'U') is not null
-drop table dbo.osoby
+ï»¿--zadanie 27
+drop table if exists dbo.osoby
+go
 create table osoby
 (
 nazwisko varchar(20) not null,
@@ -11,9 +11,10 @@ insert into osoby values
 ('Malicka', 185),
 ('Malinowski', 165),
 ('Nowicki', 178)
+go
 
-IF OBJECT_ID('dbo.zarobki', 'U') is not null
-drop table dbo.zarobki
+drop table if exists dbo.zarobki
+go
 create table zarobki
 (
 miasto varchar(20) not null,
@@ -21,47 +22,42 @@ nazwisko varchar(20) not null,
 netto float not null
 )
 insert into zarobki values
-('Gdañsk','Kowalski', 2600.90),
+('Gdansk','Kowalski', 2600.90),
 ('Gdynia','Nowicki',4400.90),
-('Gdañsk','Malinowski',2800.90),
-('Gdañsk','Malicka',3900.90)
+('Gdansk','Malinowski',2800.90),
+('Gdansk','Malicka',3900.90)
+go
 
-select * from osoby
-select * from zarobki
-
---za pomoc¹ funkcji wyœwietli iloœæ osób mieszkaj¹cych w Gdañsku, których pensja netto jest mniejsza ni¿ 3000
-IF OBJECT_ID('dbo.f1') is not null
-drop function dbo.f1
+--za pomocÂ¹ funkcji wyÅ“wietli iloÅ“Ã¦ osÃ³b mieszkajÂ¹cych w Gdansku, ktÃ³rych pensja netto jest mniejsza niÂ¿ 3000
+drop function if exists dbo.f1
 go
 create function f1()
 returns int
 begin
 declare @ile int
-set @ile=(select count(*) from zarobki where miasto = 'Gdañsk' and netto < 3000)
+set @ile=(select count(*) from zarobki where miasto = 'Gdansk' and netto < 3000)
 return @ile
 end
 go
 select dbo.f1() as 'Liczba'
 
---za pomoc¹ funkcji wyœwietli œredni wzrost (w metrach) wszystkich osób z Gdañska
-IF OBJECT_ID('dbo.f2') is not null
-drop function dbo.f2
+--za pomocÂ¹ funkcji wyÅ“wietli Å“redni wzrost (w metrach) wszystkich osÃ³b z Gdanska
+drop function if exists dbo.f2
 go
 create function f2()
 returns float
 begin
 declare @ile float
 set @ile=(
-select round(AVG(wzrost/100.00),2) from osoby where nazwisko in (select nazwisko from zarobki where miasto = 'Gdañsk')
+select round(AVG(wzrost/100.00),2) from osoby where nazwisko in (select nazwisko from zarobki where miasto = 'Gdansk')
 )
 return @ile
 end
 go
-select dbo.f2() as 'Œredni wzrost (w metrach)'
+select dbo.f2() as 'sredni wzrost (w metrach)'
 
---za pomoc¹ funkcji wyœwietli nazwisko osoby zarabiaj¹cej najwiêcej
-IF OBJECT_ID('dbo.f3') is not null
-drop function dbo.f3
+--za pomocÂ¹ funkcji wyÅ“wietli nazwisko osoby zarabiajÂ¹cej najwiÃªcej
+drop function if exists dbo.f3
 go
 create function f3()
 returns varchar(20)
@@ -75,31 +71,36 @@ end
 go
 select dbo.f3() as 'Bogacz'
 
---za pomoc¹ funkcji wyœwietli iloœæ mieszkañców z poszczególnych miast (group by + where)
-IF OBJECT_ID('dbo.f4') is not null
-drop function dbo.f4
+--za pomocÂ¹ funkcji wyÅ“wietli iloÅ“Ã¦ mieszkaÃ±cÃ³w z poszczegÃ³lnych miast (group by + where)
+drop function if exists dbo.f4
 go
-create function f4()
-returns table as return (select miasto, count(*) as 'Liczba mieszkañców' from zarobki group by miasto)
+create function f4(@miejscowosc varchar(20))
+returns table as return (select miasto, count(*) as 'Liczba mieszkancow' from zarobki where miasto = @miejscowosc group by miasto)
 go
-select * from dbo.f4()
+select * from dbo.f4('Gdansk')
 
---za pomoc¹ funkcji wyœwietli zarobki wszystkich osób, których pensja brutto (VAT=23%) jest wiêksza ni¿ minimalna pensja brutto wszystkich osób, zgodnie z poni¿szym wzorem
-IF OBJECT_ID('dbo.f5') is not null
-drop function dbo.f5
+--za pomocÂ¹ funkcji wyÅ“wietli iloÅ“Ã¦ mieszkaÃ±cÃ³w z poszczegÃ³lnych miast (group by + having)
+drop function if exists dbo.f4_2
+go
+create function f4_2(@miejscowosc varchar(20))
+returns table as return (select miasto, count(*) as 'Liczba mieszkancow' from zarobki group by miasto having miasto = @miejscowosc)
+go
+select * from dbo.f4_2('Gdynia')
+
+--za pomocÂ¹ funkcji wyÅ“wietli zarobki wszystkich osÃ³b, ktÃ³rych pensja brutto (VAT=23%) jest wiÃªksza niÂ¿ minimalna pensja brutto wszystkich osÃ³b, zgodnie z poniÂ¿szym wzorem
+drop function if exists dbo.f5
 go
 create function f5()
 returns table as return (
 	select nazwisko, netto, round(netto*1.23,2) as 'brutto'
 	from zarobki
-	where netto > (select avg(netto) from zarobki)
+	where netto > (select min(netto) from zarobki)
 )
 go
 select * from dbo.f5()
 
---za pomoc¹ funkcji wyœwietli œrednie zarobki brutto (VAT=23%) we wszystkich miastach, zgodnie z poni¿szym wzorem:
-IF OBJECT_ID('dbo.f6') is not null
-drop function dbo.f6
+--za pomocÂ¹ funkcji wyÅ“wietli Å“rednie zarobki brutto (VAT=23%) we wszystkich miastach, zgodnie z poniÂ¿szym wzorem:
+drop function if exists dbo.f6
 go
 create function f6()
 returns table as return (
@@ -110,25 +111,24 @@ returns table as return (
 go
 select * from dbo.f6()
 
---wszystkim osobom (update) z Gdañska podwy¿szy pensjê netto o 5%, a nastêpnie za pomoc¹ funkcji wyœwietli zawartoœæ tabeli po zmianach
+--wszystkim osobom (update) z Gdanska podwyÂ¿szy pensjÃª netto o 5%, a nastÃªpnie za pomocÂ¹ funkcji wyÅ“wietli zawartoÅ“Ã¦ tabeli po zmianach
 update zarobki
 set netto = round(netto * 1.05,2)
-where miasto = 'Gdañsk'
-IF OBJECT_ID('dbo.f7') is not null
-drop function dbo.f7
+where miasto = 'Gdansk'
+
+drop function if exists dbo.f7
 go
 create function f7()
 returns table as return (select * from zarobki)
 go
 select * from dbo.f7()
 
---za pomoc¹ funkcji wyœwietli (dla wszystkich rekordów) wynik w postaci:
-IF OBJECT_ID('dbo.f8') is not null
-drop function dbo.f8
+--za pomocÂ¹ funkcji wyÅ“wietli (dla wszystkich rekordÃ³w) wynik w postaci:
+drop function if exists dbo.f8
 go
 create function f8()
 returns table as return (
-	select o.nazwisko, miasto, (wzrost/100.00) as 'wzrost', netto, round(netto*1.23,2) as 'brutto'
+	select o.nazwisko, miasto, wzrost/100.00 as 'wzrost', netto, round(netto*1.23,2) as 'brutto'
 	from zarobki as z join osoby as o on z.nazwisko = o.nazwisko
 )
 go
