@@ -1,7 +1,6 @@
 /* Laboratorium 8, zadanie 28
 Napisz skrypt (wielokrotnie wykonywalny; bez polskich znakow) w
 jezyku T-SQL, który zrealizuje ponizsze czynnosci:
-
 utworzy i wyswietli ponizsze tabele zgodnie z ponizszym wzorem
 */
 drop table if exists pacjenci
@@ -13,9 +12,9 @@ nazwisko varchar(20) not null,
 data_ur datetime not null
 )
 insert into pacjenci values
-('A_1234', 'Kowalska', '1989/02/01'),
-('A_3456', 'Nowak', '1991/03/03'),
-('B_2111', 'Malicki', '1993/05/05')
+('A_1234', 'Kowalska', '19890201'),
+('A_3456', 'Nowak', '19910303'),
+('B_2111', 'Malicki', '19930505')
 go
 
 drop table if exists lekarze
@@ -54,9 +53,9 @@ data_wizyty datetime not null,
 id_lekarza varchar(4) not null
 )
 insert into wizyty values
-('A_3456', '2019-04-21 18:00', 'S_90'),
-('A_1234', '2019-05-13 14:50', 'O_34'),
-('B_2111', '2019-06-03 15:00', 'S_90')
+('A_3456', '20190421 18:00', 'S_90'),
+('A_1234', '20190513 14:50', 'O_34'),
+('B_2111', '20190603 15:00', 'S_90')
 go
 
 select id_pacjenta, nazwisko, CONVERT(varchar(10), data_ur, 111) as 'data_ur' from pacjenci
@@ -69,7 +68,13 @@ drop procedure if exists proc1
 go
 create procedure proc1
 as
-select nazwisko, CONVERT(varchar(10), data_ur, 120) as 'data_ur', DATEDIFF(year, data_ur, getdate()) as 'wiek' from pacjenci
+select nazwisko, CONVERT(varchar(10), data_ur, 120) as 'data_ur', DATEDIFF(YEAR, data_ur, getdate()) as 'wiek',
+CASE
+	When MONTH(data_ur) < MONTH(GETDATE()) THEN DATEDIFF(YEAR, data_ur, getdate())
+	When MONTH(data_ur) = MONTH(GETDATE()) AND DAY(data_ur) <= DAY(GETDATE()) THEN DATEDIFF(YEAR, data_ur, getdate())
+	ELSE DATEDIFF(YEAR, data_ur, getdate())-1
+END as 'wiek rzeczywisty'
+from pacjenci
 select nazwisko as 'nazwisko osoby najstarszej' from pacjenci
 where (select min(data_ur) from pacjenci) = data_ur 
 go
