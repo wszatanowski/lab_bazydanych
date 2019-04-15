@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS miasta
+GO
 CREATE TABLE miasta
 (
 nr INT PRIMARY KEY IDENTITY,
@@ -8,7 +10,10 @@ INSERT INTO miasta VALUES
 ('Kowalski', 'Gdansk'),
 ('Nowicki', 'Sopot'),
 ('Malinowska', 'Sopot')
+GO
 
+DROP TABLE IF EXISTS urodziny
+GO
 CREATE TABLE urodziny
 (
 lp INT PRIMARY KEY IDENTITY,
@@ -19,7 +24,10 @@ INSERT INTO urodziny VALUES
 ('Malinowska', '1980-01-01'),
 ('Nowicki', '1990-01-01'),
 ('Kowalski', '2000-01-01')
+GO
 
+DROP TABLE IF EXISTS wymiary
+GO
 CREATE TABLE wymiary
 (
 lp INT PRIMARY KEY IDENTITY,
@@ -31,10 +39,7 @@ INSERT INTO wymiary VALUES
 ('Malinowska', 1.60, 70),
 ('Nowicki', 1.93, 95),
 ('Kowalski', 1.85, 110)
-
-SELECT * FROM miasta
-SELECT * FROM urodziny
-SELECT * FROM wymiary
+GO
 
 SELECT 
 	m.nazwisko,
@@ -95,7 +100,3 @@ SELECT
 		ELSE 'brak podwyzki'
 	END as 'podwyzka'
 FROM miasta
-
-DROP TABLE miasta
-DROP TABLE urodziny
-DROP TABLE wymiary
