@@ -41,6 +41,10 @@ INSERT INTO wymiary VALUES
 ('Kowalski', 1.85, 110)
 GO
 
+SELECT * FROM miasta
+SELECT * FROM urodziny
+SELECT * FROM wymiary
+
 SELECT 
 	m.nazwisko,
 	m.miasto,
