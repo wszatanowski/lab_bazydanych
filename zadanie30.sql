@@ -190,7 +190,3 @@ INSERT INTO @tab6 (nazwisko, miasto, wiek, opis)
 	) helper
 	ORDER BY wiek ASC
 SELECT * FROM @tab6
-
-DROP TYPE szablon
-DROP TABLE miasta
-DROP TABLE urodziny
