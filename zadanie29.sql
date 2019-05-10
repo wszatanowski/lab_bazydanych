@@ -77,9 +77,11 @@ FROM miasta m
 JOIN wymiary w ON w.nazwisko = m.nazwisko
 
 ALTER TABLE miasta ADD pensja_netto INT
+GO
 UPDATE miasta SET pensja_netto = 3200 WHERE nr = 1
 UPDATE miasta SET pensja_netto = 4500 WHERE nr = 2
 UPDATE miasta SET pensja_netto = 8800 WHERE nr = 3
+GO
 
 SELECT
 	nazwisko,
