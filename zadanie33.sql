@@ -22,9 +22,9 @@ INSERT INTO clients VALUES
 ('01241500737','Zbigniew','Jankowski')
 GO
 
-DROP TABLE IF EXISTS warehouse
+DROP TABLE IF EXISTS suppliers
 GO
-CREATE TABLE warehouse
+CREATE TABLE suppliers
 (
 SupplierID INT PRIMARY KEY IDENTITY,
 SupplierName VARCHAR(20)
@@ -34,6 +34,21 @@ INSERT INTO suppliers VALUES
 ('DHL'),
 ('Janusz and Grazyna'),
 ('Blablacar')
+GO
+
+DROP TABLE IF EXISTS warehouse
+GO
+CREATE TABLE warehouse
+(
+ProductID INT,
+Stock BIT
+)
+INSERT INTO warehouse VALUES
+(1, 1),
+(2, 0),
+(3, 1),
+(4, 1),
+(5, 0)
 GO
 
 
@@ -118,6 +133,40 @@ SELECT
 	OrderDate
 FROM orders O
 JOIN clients C ON c.ClientID = O.ClientID
+GO
+
+DROP VIEW IF EXISTS stock
+GO
+CREATE VIEW stock AS
+SELECT
+	ProductName,
+	O.ProductID,
+	SupplierName,
+	O.SupplierID,
+	CategoryName,
+	C.CategoryID,
+  W.Stock
+FROM Orders O
+JOIN suppliers S ON S.SupplierID = O.SupplierID
+JOIN products P ON P.ProductID = O.ProductID
+JOIN categories C ON C.CategoryID = P.CategoryID
+JOIN warehouse W ON W.ProductID = O.ProductID
+GO
+
+DROP PROC IF EXISTS 
+GO
+CREATE PROC new_fv @OrderID, @ProductID, @Quantity AS
+IF @OrderID IN (SELECT OrderID FROM orders) AND @ProductID IN (SELECT ProductID FROM products)
+	INSERT INTO orders VALUES
+	(@OrderID, NULL, @ProductID, @Quantity, NULL, NULL, NULL)
+	SELECT
+		ProductName,
+		@ProductID,
+		SupplierName,
+		Stock
+	FROM products P
+ELSE
+
 GO
 
 SELECT * FROM clients
